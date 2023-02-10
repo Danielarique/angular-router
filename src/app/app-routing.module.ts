@@ -1,10 +1,35 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { QuicklinkStrategy } from 'ngx-quicklink/public-api';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { CustomPreloadService } from './services/custom-preload.service';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: 'login',
+    loadChildren: ()=> import('./auth/auth.module').then(m=> m.AuthModule)
+  },
+  {
+    path: '',
+    loadChildren: ()=> import('./website/website.module').then(m=> m.WebsiteModule),
+    data:{
+      preload:true
+    }
+  },
+  {
+    path: 'cms',
+    loadChildren: ()=> import('./cms/cms.module').then(m=> m.CmsModule)
+  },
+  {
+    path: '**',
+    component: NotFoundComponent
+  }
+];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy: QuicklinkStrategy
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
